@@ -3,8 +3,8 @@
 ### *A Cognitive Training Exercise in Relative Sorting*
 
 **Version:** 2.0 (Revised — 11-card deck, Chain Track, Loss Diagnosis)
-**Designer:** [Your Name]
-**Date:** [Today's Date]
+**Designer:** TODO
+**Date:** TODO
 **Status:** Paper Prototype Validated (v1.0) — Pending re-test of v2.0 additions
 
 ---
@@ -44,9 +44,9 @@
 | Verb        | Input                                                  | Output                                                |
 | ----------- | ------------------------------------------------------ | ----------------------------------------------------- |
 | **Select**  | Player picks two face-down Data Cards (by visible letter ID) | Two cards handed to Oracle                       |
-| **Query**   | Player asks "Which is larger?"                         | Oracle responds "Left" or "Right"                     |
+| **Query**   | Player asks "Which is larger?"                         | Oracle responds "Left is larger" or "Right is larger" |
 | **Place**   | Player assigns each card to LARGER pile or SMALLER pile | Piles grow                                           |
-| **Chain**   | Player drags a card letter into the Chain Track in its established relative position | Player's mental model is externalized     |
+| **Chain**   | Player drags a Letter Token into the Chain Track in its established relative position | Player's mental model is externalized    |
 | **Declare** | Player points to one face-down card                    | Game enters verification phase                        |
 | **Verify**  | All cards revealed; ranks counted; diagnosis generated | Win/Lose + Comparison Count + Diagnosis line displayed |
 
@@ -106,7 +106,7 @@ The letter ID is the player's only handle on the card during play. All compariso
 
 1. Each card has a letter (A–K) on its back. The number is hidden.
 2. You may select any two face-down Data Cards.
-3. Give them to the Oracle. The Oracle will say "Left is larger" or "Right is larger."
+3. Place them on the Compare Pad in the [L] and [R] slots and hand the pad to the Oracle. The Oracle will say "Left is larger" or "Right is larger."
 4. Place the larger card in the LARGER pile. Place the smaller in the SMALLER pile.
 5. You may move Letter Tokens onto the Chain Track at any time. The Chain Track runs from smallest (left) to largest (right). You may insert, remove, or rearrange tokens freely. Use it to record what you've learned about the cards' relative order.
 6. You may not look at the front of any Data Card until the end.
@@ -140,19 +140,19 @@ The Chain Track is the player's externalized mental model.
 When the player declares a card as median, all 11 Data Cards flip to reveal their numeric values. The verification screen displays:
 
 1. **Outcome.** Win or Loss, stated plainly.
-2. **Your declared card's actual rank.** Example: *"You chose card F (value 341), which was rank 4 of 11 — 3 cards smaller, 7 larger."* Shown always, win or lose.
-3. **The true median.** Letter and value, e.g. *"The median was card J (value 556)."*
+2. **Your declared card's actual rank.** Example: *"You chose card X (value YYY), which was rank 4 of 11 — 3 cards smaller, 7 larger."* Shown always, win or lose.
+3. **The true median.** Letter and value, e.g. *"The median was card M (value MMM)."*
 4. **Full sorted order.** Eleven cards displayed in a row, smallest to largest, with letters and values visible.
 5. **Comparisons used.** Total count.
 6. **Theoretical minimum.** *"The median is solvable in as few as ~17 comparisons. A full sort requires at least 26."* Frames the player's count without shaming.
-7. **Diagnosis line.** One sentence generated from the player's final Chain Track state and declaration. Examples of diagnostic cases the rules engine should handle:
+7. **Diagnosis line.** One sentence generated from the player's final Chain Track state and declaration. The examples below are illustrative templates — the rules engine should substitute the round's actual letters, values, and counts at runtime, not the placeholder tokens shown here. Diagnostic cases to handle:
 
    - **Clean win:** *"You correctly placed 5 cards on each side of your declared median in 19 comparisons."*
    - **Win but expensive:** *"Correct, but you used 31 comparisons — close to a full sort. The median can be isolated without fully ordering both halves."*
-   - **Off-by-one miss:** *"You separated the upper and lower halves correctly, but didn't distinguish between rank 5 and rank 6. One more comparison between cards F and J would have resolved it."*
+   - **Off-by-one miss:** *"You separated the upper and lower halves correctly, but didn't distinguish between rank 5 and rank 6. One more comparison between the two boundary candidates would have resolved it."*
    - **Wrong half:** *"You declared from the lower half. Of the 5 cards smaller than the true median, you placed only 3 in the SMALLER pile — your comparisons didn't reach the boundary."*
-   - **Chain contradiction:** *"Your Chain Track contained a contradiction at the moment of declaration: you had placed F to the right of B (F > B) via one path, and B to the right of F (B > F) via another. The Oracle never lied; your track did."*
-   - **Premature declaration:** *"You declared with only 8 comparisons. The median cannot be determined from this little information — at minimum 12 carefully chosen comparisons are needed."*
+   - **Chain contradiction:** *"Your Chain Track contained a contradiction at the moment of declaration: along one path of comparisons card X ended up to the right of card Y, and along another path Y ended up to the right of X. The Oracle never lied; your track did."*
+   - **Premature declaration:** *"You declared with only 8 comparisons. The median cannot be determined from this little information — at minimum 12 carefully chosen comparisons are needed to rule out enough candidates (the optimal algorithm uses ~17; see §4.3)."*
 
 The diagnosis line is the most pedagogically valuable element of the game. It turns each round into a targeted lesson rather than an unattributed loss.
 
@@ -186,8 +186,8 @@ The diagnosis line is the most pedagogically valuable element of the game. It tu
 
 ### 6.1 Test Configuration
 
-- **Date:** [Date of test]
-- **Tester:** [Relationship, e.g., "Partner" or "Coworker"]
+- **Date:** TODO
+- **Tester:** TODO
 - **Designer as Oracle:** Yes
 - **Data Set:** Seed v1 (10 cards — v2.0 test pending)
 
@@ -196,12 +196,12 @@ The diagnosis line is the most pedagogically valuable element of the game. It tu
 | Observation                                                                  | Category    | Severity |
 | ---------------------------------------------------------------------------- | ----------- | -------- |
 | Player verbally articulated "This is about sorting" without prompting        | **Success** | —        |
-| [Insert your surprise observation here]                                       | —           | —        |
-| [Insert any confusion or hesitation points]                                   | —           | —        |
+| TODO                                                                          | TODO        | TODO     |
+| TODO                                                                          | TODO        | TODO     |
 
 ### 6.3 Design Iterations (If Any)
 
-[If you changed a rule mid-test, document it here. If not, state "No rules were changed during the playtest."]
+TODO — if rules were changed mid-test, document here; otherwise state "No rules were changed during the playtest."
 
 ### 6.4 Required Re-Test for v2.0
 
@@ -276,6 +276,8 @@ function checkWin(chosenCardId) {
   return ranks[chosenCardId] === medianRank;
 }
 
+// Illustrative only: the production diagnosis should produce the richer,
+// context-specific strings enumerated in §4.5 (named letters, pile counts, etc.).
 function generateDiagnosis(chosenCardId) {
   const { sorted, ranks } = getSortedRanks();
   const chosenRank = ranks[chosenCardId];
