@@ -79,7 +79,7 @@ The game ends when the player declares a card as the median. The card is flipped
 ### 3.3 Roles
 
 - **Player:** The learner. Makes all decisions.
-- **Oracle:** The system (designer in prototype; JavaScript function in browser). Responds only to comparison queries. Does not reveal raw values.
+- **Oracle:** The system (designer in prototype; TypeScript function in browser). Responds only to comparison queries. Does not reveal raw values.
 
 ### 3.4 Card Identity
 
@@ -117,7 +117,7 @@ The letter ID is the player's only handle on the card during play. All compariso
 
 - All 11 values are unique. (Eliminates equality edge case.)
 - The median is defined as the **6th card in an 11-card 1-indexed sorted list** (5 larger, 5 smaller).
-- Oracle function: `compare(a, b) → a.value > b.value ? "Left" : "Right"`
+- Oracle function (TypeScript): `compare(a, b) => a.value > b.value ? "Left" : "Right"`
 - Oracle never reveals numeric values. This is the **core mechanic**.
 - **Information-theoretic notes for the designer:**
   - Full sort lower bound: ⌈log₂(11!)⌉ = 26 comparisons.
@@ -218,24 +218,65 @@ A 30-minute re-test with a fresh tester is sufficient before committing to code.
 
 ## 7. Technical Translation: Paper → Browser
 
+### 7.0 Technology Stack
+
+The browser build is a single-page application scaffolded with **Vite**, written in **React** and **TypeScript**.
+
+| Concern            | Choice                                                                 |
+| ------------------ | ---------------------------------------------------------------------- |
+| Build tool / dev server | **Vite** (`npm create vite@latest -- --template react-ts`)         |
+| UI framework       | **React** (function components + hooks)                                 |
+| Language           | **TypeScript** (strict mode)                                            |
+| Styling            | CSS Modules (or plain CSS) — no heavy UI library required for the MVP  |
+| Drag-and-drop      | Native HTML5 Drag and Drop (or `@dnd-kit/core` if richer interaction is needed) for the Chain Track |
+| State management   | React local state + `useReducer` for game state; no external store needed for the MVP |
+| Testing            | **Vitest** for the pure game logic (Oracle, ranking, diagnosis)         |
+
+The Oracle and all rules logic live in framework-agnostic TypeScript modules (e.g. `src/game/`), kept free of React so they can be unit-tested in isolation. React components consume that logic through a single game-state hook/reducer.
+
 ### 7.1 Mapping Physical Components to Code
 
 | Physical Component   | Browser Equivalent                                                |
 | -------------------- | ----------------------------------------------------------------- |
-| Data Cards           | Array of 11 objects: `{id: "A", value: int, faceUp: bool}`        |
-| Letter ID on back    | Text label rendered on `.card-face-down` element                  |
-| Face-Down State      | CSS class `.card-face-down` (background color, letter visible, value hidden) |
-| Compare Pad          | Two drop zones + "Compare" button                                 |
-| Oracle               | JavaScript function `compareCards(cardA, cardB)`                  |
-| LARGER/SMALLER Piles | Two flexbox containers (left/right side of screen)                |
-| Chain Track          | 11-slot horizontal drag-and-drop container; draggable letter tokens |
+| Data Cards           | `DataCard[]`: `{ id: CardId; value: number; faceUp: boolean }` in React state |
+| Letter ID on back    | Text label rendered inside a `<Card>` component (face-down variant) |
+| Face-Down State      | `faceUp` prop driving a CSS Module class (background color, letter visible, value hidden) |
+| Compare Pad          | `<ComparePad>` component: two drop zones + "Compare" button        |
+| Oracle               | Pure TypeScript function `compareCards(a, b)` in `src/game/oracle.ts` |
+| LARGER/SMALLER Piles | Two `<Pile>` components (flexbox, left/right of screen)             |
+| Chain Track          | `<ChainTrack>` component: 11-slot drag-and-drop container; draggable `<LetterToken>`s |
 | Median Declaration   | Click-to-select card + "This is the Median" button                |
-| Verification         | Flip all cards animation + results modal with diagnosis           |
+| Verification         | Flip-all-cards animation + `<ResultsModal>` with diagnosis         |
 
-### 7.2 Core Logic (Pseudocode)
+### 7.2 Core Logic (TypeScript)
 
-```javascript
-const dataCards = [
+Pure game logic lives in `src/game/` and is independent of React.
+
+```typescript
+// src/game/types.ts
+export type CardId = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K";
+
+export interface DataCard {
+  id: CardId;
+  value: number;
+  faceUp: boolean;
+}
+
+export interface Comparison {
+  larger: CardId;
+  smaller: CardId;
+}
+
+export interface GameState {
+  dataCards: DataCard[];
+  comparisonCount: number;
+  comparisonHistory: Comparison[];
+  chainTrack: (CardId | null)[]; // length 11; null = empty slot
+  declaredCardId: CardId | null;
+}
+
+// src/game/deck.ts
+export const initialDataCards: DataCard[] = [
   { id: "A", value: 872, faceUp: false },
   { id: "B", value: 341, faceUp: false },
   { id: "C", value: 999, faceUp: false },
@@ -249,39 +290,39 @@ const dataCards = [
   { id: "K", value: 695, faceUp: false },
 ];
 
-let comparisonCount = 0;
-const comparisonHistory = []; // [{larger: "A", smaller: "B"}, ...]
-let chainTrack = new Array(11).fill(null); // slots 0..10; null = empty
-let declaredCardId = null;
-
-function compareCards(cardA, cardB) {
-  comparisonCount++;
-  const result = cardA.value > cardB.value
-    ? { larger: cardA.id, smaller: cardB.id }
-    : { larger: cardB.id, smaller: cardA.id };
-  comparisonHistory.push(result);
-  return result;
+// src/game/oracle.ts
+export function compareCards(a: DataCard, b: DataCard): Comparison {
+  return a.value > b.value
+    ? { larger: a.id, smaller: b.id }
+    : { larger: b.id, smaller: a.id };
 }
 
-function getSortedRanks() {
+// src/game/ranking.ts
+export function getSortedRanks(dataCards: DataCard[]): {
+  sorted: DataCard[];
+  ranks: Record<CardId, number>;
+} {
   const sorted = [...dataCards].sort((a, b) => a.value - b.value);
-  const ranks = {};
+  const ranks = {} as Record<CardId, number>;
   sorted.forEach((card, idx) => { ranks[card.id] = idx + 1; }); // 1-indexed rank
   return { sorted, ranks };
 }
 
-function checkWin(chosenCardId) {
-  const { ranks } = getSortedRanks();
-  const medianRank = 6; // 6th of 11
-  return ranks[chosenCardId] === medianRank;
+const MEDIAN_RANK = 6; // 6th of 11
+
+export function checkWin(dataCards: DataCard[], chosenCardId: CardId): boolean {
+  const { ranks } = getSortedRanks(dataCards);
+  return ranks[chosenCardId] === MEDIAN_RANK;
 }
 
+// src/game/diagnosis.ts
 // Illustrative only: the production diagnosis should produce the richer,
 // context-specific strings enumerated in §4.5 (named letters, pile counts, etc.).
-function generateDiagnosis(chosenCardId) {
-  const { sorted, ranks } = getSortedRanks();
+export function generateDiagnosis(state: GameState, chosenCardId: CardId): string {
+  const { ranks } = getSortedRanks(state.dataCards);
   const chosenRank = ranks[chosenCardId];
-  const won = chosenRank === 6;
+  const won = chosenRank === MEDIAN_RANK;
+  const { comparisonCount, chainTrack, comparisonHistory } = state;
 
   // Detect Chain Track contradictions against comparisonHistory.
   const contradictions = detectChainContradictions(chainTrack, comparisonHistory);
@@ -291,13 +332,15 @@ function generateDiagnosis(chosenCardId) {
   if (won) return `Correct in ${comparisonCount} comparisons.`;
 
   if (contradictions.length > 0) return formatContradiction(contradictions[0]);
-  if (Math.abs(chosenRank - 6) === 1) return "Off by one — one more comparison would have done it.";
-  if (chosenRank < 6) return "You declared from the lower half.";
-  if (chosenRank > 6) return "You declared from the upper half.";
+  if (Math.abs(chosenRank - MEDIAN_RANK) === 1) return "Off by one — one more comparison would have done it.";
+  if (chosenRank < MEDIAN_RANK) return "You declared from the lower half.";
+  if (chosenRank > MEDIAN_RANK) return "You declared from the upper half.";
   if (comparisonCount < 12) return "Premature declaration — not enough information was gathered.";
   return "Incorrect.";
 }
 ```
+
+`comparisonCount` is incremented in the reducer when a `COMPARE` action is dispatched (keeping `compareCards` itself pure), and `comparisonHistory` is appended there as well.
 
 ### 7.3 Browser Feature Roadmap
 

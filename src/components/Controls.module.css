@@ -1,0 +1,33 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.counter {
+  font-size: 1.1rem;
+}
+
+.declareActive {
+  background: #ef476f;
+  color: #fff;
+}
+
+.hint {
+  color: #ffd166;
+  font-weight: 600;
+}
+
+.verify {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.reveal {
+  font-weight: 600;
+  background: #4cc9f0;
+  color: #04293a;
+}

@@ -1,0 +1,44 @@
+.pile {
+  border-radius: 12px;
+  padding: 1rem;
+  min-width: 120px;
+  min-height: 160px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.larger {
+  background: rgba(239, 71, 111, 0.08);
+}
+
+.smaller {
+  background: rgba(6, 214, 160, 0.08);
+}
+
+.heading {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+.tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 700;
+}
+
+.empty {
+  opacity: 0.4;
+  font-size: 0.85rem;
+}

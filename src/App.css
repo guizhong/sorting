@@ -1,0 +1,40 @@
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.appHeader {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.appHeader h1 {
+  margin: 0 0 0.25rem;
+}
+
+.tagline {
+  max-width: 620px;
+  margin: 0 auto;
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.45rem 0.8rem;
+  background: #2f2b45;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
