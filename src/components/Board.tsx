@@ -44,7 +44,9 @@ export function Board({ game }: { game: GameApi }) {
   const handleCardClick = (id: CardId) => {
     if (state.phase !== 'playing') return
     if (declareMode) {
+      // Declaring the median flips every card and goes straight to results.
       game.declare(id)
+      game.reveal()
       setDeclareMode(false)
       return
     }
@@ -58,31 +60,53 @@ export function Board({ game }: { game: GameApi }) {
     })
   }
 
+  // A card lives in exactly one place. Once it is on the Chain Track it is
+  // removed from the deck and from its pile; the underlying pile assignment
+  // is retained so the card returns to its pile when taken off the track.
+  const tracked = new Set(
+    state.chainTrack.filter((c): c is CardId => c !== null),
+  )
+
   const largerPile = (Object.keys(state.piles) as CardId[]).filter(
-    (id) => state.piles[id] === 'larger',
+    (id) => state.piles[id] === 'larger' && !tracked.has(id),
   )
   const smallerPile = (Object.keys(state.piles) as CardId[]).filter(
-    (id) => state.piles[id] === 'smaller',
+    (id) => state.piles[id] === 'smaller' && !tracked.has(id),
   )
 
   return (
     <div className={styles.board}>
       <div className={styles.middle}>
-        <Pile kind="smaller" cardIds={smallerPile} />
+        <Pile
+          kind="smaller"
+          cardIds={smallerPile}
+          onReturnAll={game.returnPile}
+        />
 
         <div className={styles.center}>
           <div className={styles.deck} aria-label="Data cards">
-            {state.dataCards.map((card) => (
-              <Card
-                key={card.id}
-                card={card}
-                onClick={handleCardClick}
-                selected={pad.left === card.id || pad.right === card.id}
-                declared={state.declaredCardId === card.id}
-                pile={state.piles[card.id]}
-                disabled={state.phase !== 'playing'}
-              />
-            ))}
+            {state.dataCards.map((card) =>
+              tracked.has(card.id) ? (
+                // Vacated: this card is currently on the Chain Track.
+                <div
+                  key={card.id}
+                  className={styles.deckSlotEmpty}
+                  aria-label={`Card ${card.id}, on the chain track`}
+                />
+              ) : (
+                <Card
+                  key={card.id}
+                  card={card}
+                  onClick={handleCardClick}
+                  selected={pad.left === card.id || pad.right === card.id}
+                  declared={state.declaredCardId === card.id}
+                  pile={state.piles[card.id]}
+                  disabled={
+                    state.phase !== 'playing' || state.piles[card.id] != null
+                  }
+                />
+              ),
+            )}
           </div>
 
           <ComparePad
@@ -92,12 +116,20 @@ export function Board({ game }: { game: GameApi }) {
             onCompare={() => {
               if (pad.left && pad.right) game.compare(pad.left, pad.right)
             }}
-            onPlace={(id, pile) => game.placeInPile(id, pile)}
+            onPlace={(id, pile) => {
+              game.placeInPile(id, pile)
+              // Free the pad slot the placed card occupied so a new card
+              // can be compared without manually clearing the pad.
+              setPad((prev) => ({
+                left: prev.left === id ? null : prev.left,
+                right: prev.right === id ? null : prev.right,
+              }))
+            }}
             onClear={() => setPad({ left: null, right: null })}
           />
         </div>
 
-        <Pile kind="larger" cardIds={largerPile} />
+        <Pile kind="larger" cardIds={largerPile} onReturnAll={game.returnPile} />
       </div>
 
       <ChainTrack
@@ -106,8 +138,14 @@ export function Board({ game }: { game: GameApi }) {
         onSelectToken={setSelectedToken}
         onPlaceSlot={(slot) => {
           if (selectedToken) {
-            game.chainMove(selectedToken, slot)
+            const moved = selectedToken
+            game.chainMove(moved, slot)
             setSelectedToken(null)
+            // If this card was staged in the compare pad, free that slot too.
+            setPad((prev) => ({
+              left: prev.left === moved ? null : prev.left,
+              right: prev.right === moved ? null : prev.right,
+            }))
           }
         }}
         onRemoveToken={(id) => game.chainMove(id, null)}
@@ -117,9 +155,7 @@ export function Board({ game }: { game: GameApi }) {
         comparisonCount={state.comparisonCount}
         phase={state.phase}
         declareMode={declareMode}
-        declaredId={state.declaredCardId}
         onToggleDeclareMode={() => setDeclareMode((m) => !m)}
-        onReveal={game.reveal}
       />
     </div>
   )

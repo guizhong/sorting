@@ -20,6 +20,13 @@
   cursor: default;
 }
 
+/* A card placed in a pile is locked out of the deck: dim it so the empty
+   slot reads as "already sorted" while keeping its pile-colored border. */
+.card:disabled.larger,
+.card:disabled.smaller {
+  opacity: 0.4;
+}
+
 .card:not(:disabled):hover {
   transform: translateY(-3px);
 }

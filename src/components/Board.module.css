@@ -27,6 +27,16 @@
   max-width: 460px;
 }
 
+/* Placeholder shown in the deck grid when a card has been moved onto the
+   Chain Track, keeping the grid layout stable while reading as "empty". */
+.deckSlotEmpty {
+  width: 64px;
+  height: 88px;
+  border-radius: 8px;
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  box-sizing: border-box;
+}
+
 @media (max-width: 720px) {
   .middle {
     flex-direction: column;

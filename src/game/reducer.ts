@@ -40,6 +40,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
     }
 
+    case 'RETURN_PILE': {
+      if (state.phase !== 'playing') return state
+      // Move every card in this pile back to the deck by clearing its
+      // assignment. Cards currently on the Chain Track keep their slot and
+      // assignment (they aren't shown in the pile), so the track is untouched.
+      const onTrack = new Set(state.chainTrack.filter((c) => c !== null))
+      const piles = { ...state.piles }
+      for (const id of Object.keys(piles) as (keyof typeof piles)[]) {
+        if (piles[id] === action.pile && !onTrack.has(id)) delete piles[id]
+      }
+      return { ...state, piles }
+    }
+
     case 'CHAIN_MOVE': {
       if (state.phase !== 'playing') return state
       const track = state.chainTrack.map((c) => (c === action.id ? null : c))

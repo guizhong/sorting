@@ -66,7 +66,7 @@ The game ends when the player declares a card as the median. The card is flipped
 | **Target Card** | 3×5 index card. Reads "FIND THE MEDIAN" on one side.                                          | 1        |
 | **Compare Pad** | 3×5 index card (distinct color). Two slots labeled [L] and [R].                                | 1        |
 | **Chain Track** | Strip of paper or card with 11 numbered slots (1 = smallest, 11 = largest). Letter tokens are dragged into slots and freely re-ordered. | 1 |
-| **Letter Tokens** | Small markers (paper squares, poker chips, etc.) labeled A–K, used to populate the Chain Track without picking up the Data Cards themselves. | 11 |
+| **Letter Tokens** | Small markers (paper squares, poker chips, etc.) labeled A–K, used to populate the Chain Track without picking up the Data Cards themselves. In the **digital build**, the token and its Data Card are the same object — a card occupies exactly one place at a time (deck, a pile, or a Chain Track slot), so moving a card onto the track vacates its slot in the deck/pile. | 11 |
 | **Rules Sheet** | 1-page printed/handwritten player-facing instructions.                                         | 1        |
 
 ### 3.2 Sample Data Set (Seed: Prototype v2)
@@ -108,7 +108,7 @@ The letter ID is the player's only handle on the card during play. All compariso
 2. You may select any two face-down Data Cards.
 3. Place them on the Compare Pad in the [L] and [R] slots and hand the pad to the Oracle. The Oracle will say "Left is larger" or "Right is larger."
 4. Place the larger card in the LARGER pile. Place the smaller in the SMALLER pile.
-5. You may move Letter Tokens onto the Chain Track at any time. The Chain Track runs from smallest (left) to largest (right). You may insert, remove, or rearrange tokens freely. Use it to record what you've learned about the cards' relative order.
+5. You may move cards onto the Chain Track at any time. The Chain Track runs from smallest (left) to largest (right). You may insert, remove, or rearrange them freely. A card on the track leaves the deck/pile it came from (it occupies one place at a time) and returns there when removed from the track. Use the track to record what you've learned about the cards' relative order.
 6. You may not look at the front of any Data Card until the end.
 7. When you are confident, point to the card you believe is the **Median**.
 8. Reveal all cards. If your card has exactly 5 cards larger and 5 smaller, you win. The screen will also tell you why you won or lost.

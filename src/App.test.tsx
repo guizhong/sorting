@@ -17,6 +17,24 @@ describe('App — full round', () => {
     expect(screen.queryByText('556')).toBeNull()
   })
 
+  it('starts a fresh round when New Game is clicked', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    // Make a comparison so there is state to reset.
+    await user.click(screen.getByLabelText('Card A, face down'))
+    await user.click(screen.getByLabelText('Card B, face down'))
+    await user.click(screen.getByRole('button', { name: /which is larger/i }))
+    expect(screen.getByText(/Comparisons:/)).toHaveTextContent('1')
+
+    await user.click(screen.getByRole('button', { name: /new game/i }))
+
+    // Board is reset: counter back to zero, 11 face-down cards, no leaked values.
+    expect(screen.getByText(/Comparisons:/)).toHaveTextContent('0')
+    expect(screen.getAllByLabelText(/face down$/)).toHaveLength(11)
+    expect(screen.queryByText(/value \d/)).toBeNull()
+  })
+
   it('plays a winning round: compare, declare E, reveal, see diagnosis', async () => {
     const user = userEvent.setup()
     render(<App />)
@@ -27,10 +45,9 @@ describe('App — full round', () => {
     await user.click(screen.getByRole('button', { name: /which is larger/i }))
     expect(screen.getByText(/Comparisons:/)).toHaveTextContent('1')
 
-    // Declare the true median (E in the seed deck).
+    // Declaring the true median (E in the seed deck) flips all cards at once.
     await user.click(screen.getByRole('button', { name: /declare the median/i }))
     await user.click(screen.getByLabelText('Card E, face down'))
-    await user.click(screen.getByRole('button', { name: /reveal & verify/i }))
 
     const dialog = screen.getByRole('dialog', { name: /round results/i })
     expect(within(dialog).getByText('You win!')).toBeInTheDocument()
@@ -39,13 +56,66 @@ describe('App — full round', () => {
     expect(within(dialog).getAllByText('556').length).toBeGreaterThan(0)
   })
 
+  it('vacates a card from the deck and its pile when placed on the chain track', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    // Compare A and B; A (872) is larger, so sort A into the LARGER pile.
+    await user.click(screen.getByLabelText('Card A, face down'))
+    await user.click(screen.getByLabelText('Card B, face down'))
+    await user.click(screen.getByRole('button', { name: /which is larger/i }))
+    await user.click(screen.getByRole('button', { name: /A → LARGER/i }))
+
+    // A is in the deck (now disabled) and shows in the LARGER pile.
+    expect(screen.getByLabelText('Card A, face down')).toBeInTheDocument()
+    const larger = screen.getByLabelText('LARGER pile')
+    expect(within(larger).getByText('A')).toBeInTheDocument()
+
+    // Move A onto the chain track: select its token, place it in slot 1.
+    await user.click(screen.getByRole('button', { name: 'Letter token A' }))
+    await user.click(screen.getByRole('button', { name: /Slot 1, empty/i }))
+
+    // A is now ONLY on the track: vacated from the deck and the pile.
+    expect(screen.queryByLabelText('Card A, face down')).toBeNull()
+    expect(screen.getByLabelText('Card A, on the chain track')).toBeInTheDocument()
+    expect(within(larger).queryByText('A')).toBeNull()
+
+    // Taking it off the track returns it to the deck and the pile.
+    await user.click(screen.getByRole('button', { name: /Slot 1, token A/i }))
+    expect(screen.getByLabelText('Card A, face down')).toBeInTheDocument()
+    expect(within(larger).getByText('A')).toBeInTheDocument()
+  })
+
+  it('returns all cards in a pile to the deck via the pile button', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    // Compare A and B; sort A → LARGER.
+    await user.click(screen.getByLabelText('Card A, face down'))
+    await user.click(screen.getByLabelText('Card B, face down'))
+    await user.click(screen.getByRole('button', { name: /which is larger/i }))
+    await user.click(screen.getByRole('button', { name: /A → LARGER/i }))
+
+    const larger = screen.getByLabelText('LARGER pile')
+    expect(within(larger).getByText('A')).toBeInTheDocument()
+    // The card is disabled in the deck while it lives in the pile.
+    expect(screen.getByLabelText('Card A, face down')).toBeDisabled()
+
+    // Click "Return all to deck": pile empties, A becomes selectable again.
+    await user.click(
+      within(larger).getByRole('button', { name: /return all to deck/i }),
+    )
+    expect(within(larger).queryByText('A')).toBeNull()
+    expect(within(larger).getByText('empty')).toBeInTheDocument()
+    expect(screen.getByLabelText('Card A, face down')).toBeEnabled()
+  })
+
   it('plays a losing round and shows a diagnosis', async () => {
     const user = userEvent.setup()
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: /declare the median/i }))
     await user.click(screen.getByLabelText('Card D, face down')) // rank 1
-    await user.click(screen.getByRole('button', { name: /reveal & verify/i }))
 
     const dialog = screen.getByRole('dialog', { name: /round results/i })
     expect(within(dialog).getByText('Not the median')).toBeInTheDocument()

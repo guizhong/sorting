@@ -69,6 +69,7 @@ export interface GameState {
 export type GameAction =
   | { type: 'COMPARE'; left: CardId; right: CardId }
   | { type: 'PLACE_IN_PILE'; id: CardId; pile: Pile }
+  | { type: 'RETURN_PILE'; pile: Pile }
   | { type: 'CHAIN_MOVE'; id: CardId; slot: number | null }
   | { type: 'DECLARE'; id: CardId }
   | { type: 'REVEAL' }

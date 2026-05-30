@@ -19,6 +19,12 @@ export const initialDataCards: DataCard[] = [
   { id: 'K', value: 695, faceUp: false },
 ]
 
+/** A fresh non-zero 32-bit seed for a newly shuffled deck. */
+export function randomSeed(): number {
+  // Avoid 0, which would otherwise collide with the unseeded fixed deck path.
+  return (Math.floor(Math.random() * 0xffffffff) + 1) >>> 0
+}
+
 /** Deterministic PRNG (mulberry32) so seeded decks are reproducible in tests. */
 function mulberry32(seed: number): () => number {
   let a = seed >>> 0

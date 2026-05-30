@@ -1,22 +1,18 @@
-import type { CardId, Phase } from '../game'
+import type { Phase } from '../game'
 import styles from './Controls.module.css'
 
 interface ControlsProps {
   comparisonCount: number
   phase: Phase
   declareMode: boolean
-  declaredId: CardId | null
   onToggleDeclareMode: () => void
-  onReveal: () => void
 }
 
 export function Controls({
   comparisonCount,
   phase,
   declareMode,
-  declaredId,
   onToggleDeclareMode,
-  onReveal,
 }: ControlsProps) {
   return (
     <section className={styles.controls} aria-label="Controls">
@@ -36,19 +32,9 @@ export function Controls({
 
       {phase === 'playing' && declareMode && (
         <span className={styles.hint} role="status">
-          Click the card you believe is the median.
+          Click the card you believe is the median — all cards flip and the
+          round is scored.
         </span>
-      )}
-
-      {phase === 'verifying' && (
-        <div className={styles.verify} role="status">
-          <span>
-            You declared card <strong>{declaredId}</strong>.
-          </span>
-          <button type="button" className={styles.reveal} onClick={onReveal}>
-            Reveal &amp; verify
-          </button>
-        </div>
       )}
     </section>
   )
