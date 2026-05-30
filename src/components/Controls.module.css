@@ -1,0 +1,50 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.counter {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.declareButton {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-warning);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: var(--shadow);
+}
+
+.declareButton:disabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.declareButton:not(:disabled):hover {
+  background: #f4c430;
+  transform: translateY(-1px);
+}
+
+.declareButton:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+}

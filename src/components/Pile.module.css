@@ -1,0 +1,57 @@
+.pile {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
+  min-width: 120px;
+  min-height: 200px;
+  background: var(--color-surface);
+}
+
+.pileLabel {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.larger {
+  border-color: var(--color-danger);
+}
+
+.larger .pileLabel {
+  color: var(--color-danger);
+}
+
+.smaller {
+  border-color: var(--color-success);
+}
+
+.smaller .pileLabel {
+  color: var(--color-success);
+}
+
+.pileCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.emptyHint {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+.dragOver {
+  background: rgba(67, 97, 238, 0.05);
+  border-color: var(--color-accent);
+}

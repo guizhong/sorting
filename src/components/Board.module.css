@@ -1,0 +1,150 @@
+.board {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.mainArea {
+  display: grid;
+  grid-template-columns: 160px 1fr 160px;
+  gap: 16px;
+  margin-bottom: 20px;
+  align-items: start;
+}
+
+.centerColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardsArea {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  min-height: 120px;
+}
+
+.cardsLabel {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.emptyCards {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: 20px;
+}
+
+.controlsSection {
+  margin-top: 12px;
+}
+
+.trackSection {
+  margin-top: 20px;
+}
+
+.rulesButton {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.rulesButton:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.rulesOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+}
+
+.rulesPanel {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.rulesPanel h2 {
+  font-size: 22px;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+.rulesPanel ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.rulesPanel li {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--color-text);
+}
+
+.closeRules {
+  display: block;
+  margin: 16px auto 0;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.closeRules:hover {
+  background: var(--color-accent-hover);
+}
+
+@media (max-width: 800px) {
+  .mainArea {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+}

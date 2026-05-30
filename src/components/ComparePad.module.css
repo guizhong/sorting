@@ -1,0 +1,74 @@
+.comparePad {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  min-height: 140px;
+}
+
+.slot {
+  width: 80px;
+  height: 112px;
+  border: 2px dashed var(--color-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--color-text-muted);
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+
+.slotFilled {
+  border-style: solid;
+  border-color: var(--color-accent);
+  background: rgba(67, 97, 238, 0.05);
+}
+
+.dragOver {
+  border-color: var(--color-accent);
+  background: rgba(67, 97, 238, 0.1);
+}
+
+.label {
+  position: absolute;
+  top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.compareButton {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.compareButton:disabled {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.compareButton:not(:disabled):hover {
+  background: var(--color-accent-hover);
+}
+
+.result {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-align: center;
+  min-width: 100px;
+}
